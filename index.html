@@ -555,6 +555,88 @@ function groupSizesLabel(gk) {
 }
 function selectedInGroup(gk) { return GROUPS[gk]?.find(id => state.selections.has(id)) || null; }
 
+// ═══ TITRATION SCHEDULES ═══
+// Each entry: {label, dose (mcg), freq (inj/day), weeks (text), desc}
+const TITRATION = {
+  sema: [
+    {label:'Start', dose:250,  freq:0.14, weeks:'Weeks 1–4',   desc:'0.25mg/wk'},
+    {label:'Step 2', dose:500,  freq:0.14, weeks:'Weeks 5–8',   desc:'0.5mg/wk'},
+    {label:'Step 3', dose:1000, freq:0.14, weeks:'Weeks 9–12',  desc:'1mg/wk'},
+    {label:'Step 4', dose:1700, freq:0.14, weeks:'Weeks 13–16', desc:'1.7mg/wk'},
+    {label:'Target', dose:2400, freq:0.14, weeks:'Week 17+',    desc:'2.4mg/wk'}
+  ],
+  tirze: [
+    {label:'Start', dose:2500,  freq:0.14, weeks:'Weeks 1–4',   desc:'2.5mg/wk'},
+    {label:'Step 2', dose:5000,  freq:0.14, weeks:'Weeks 5–8',   desc:'5mg/wk'},
+    {label:'Step 3', dose:7500,  freq:0.14, weeks:'Weeks 9–12',  desc:'7.5mg/wk'},
+    {label:'Step 4', dose:10000, freq:0.14, weeks:'Weeks 13–16', desc:'10mg/wk'},
+    {label:'Step 5', dose:12500, freq:0.14, weeks:'Weeks 17–20', desc:'12.5mg/wk'},
+    {label:'Target', dose:15000, freq:0.14, weeks:'Week 21+',    desc:'15mg/wk'}
+  ],
+  reta: [
+    {label:'Start', dose:1000, freq:0.14, weeks:'Weeks 1–4',   desc:'1mg/wk'},
+    {label:'Step 2', dose:2000, freq:0.14, weeks:'Weeks 5–8',   desc:'2mg/wk'},
+    {label:'Step 3', dose:4000, freq:0.14, weeks:'Weeks 9–12',  desc:'4mg/wk'},
+    {label:'Step 4', dose:8000, freq:0.14, weeks:'Weeks 13–20', desc:'8mg/wk'},
+    {label:'Target', dose:12000,freq:0.14, weeks:'Week 21+',    desc:'12mg/wk'}
+  ],
+  bpc157: [
+    {label:'Loading', dose:300, freq:2,   weeks:'Weeks 1–2', desc:'300mcg 2×/day'},
+    {label:'Standard',dose:250, freq:2,   weeks:'Weeks 3–6', desc:'250mcg 2×/day'},
+    {label:'Maintain', dose:250, freq:1,   weeks:'Week 7+',   desc:'250mcg 1×/day'}
+  ],
+  tb500: [
+    {label:'Loading', dose:2500, freq:0.43, weeks:'Weeks 1–4', desc:'2.5mg 3×/wk'},
+    {label:'Maintain', dose:2500, freq:0.14, weeks:'Week 5+',   desc:'2.5mg 1×/wk'}
+  ],
+  cjc1295: [
+    {label:'Start', dose:100, freq:1, weeks:'Weeks 1–2', desc:'100mcg/day'},
+    {label:'Step 2', dose:150, freq:1, weeks:'Weeks 3–4', desc:'150mcg/day'},
+    {label:'Target', dose:200, freq:1, weeks:'Week 5+',   desc:'200mcg/day'}
+  ],
+  ipamorelin: [
+    {label:'Start', dose:100, freq:1, weeks:'Weeks 1–2', desc:'100mcg/day'},
+    {label:'Step 2', dose:200, freq:1, weeks:'Weeks 3–4', desc:'200mcg/day'},
+    {label:'Target', dose:300, freq:1, weeks:'Week 5+',   desc:'300mcg/day'}
+  ],
+  cjcipa: [
+    {label:'Start', dose:200, freq:1, weeks:'Weeks 1–2', desc:'200mcg/day combo'},
+    {label:'Step 2', dose:300, freq:1, weeks:'Weeks 3–4', desc:'300mcg/day combo'},
+    {label:'Target', dose:400, freq:1, weeks:'Week 5+',   desc:'400mcg/day combo'}
+  ],
+  mtii: [
+    {label:'Loading', dose:250, freq:1,    weeks:'Days 1–7',  desc:'250mcg daily'},
+    {label:'Maintain', dose:500, freq:0.14, weeks:'Week 2+',   desc:'0.5mg 1×/wk'}
+  ],
+  mti: [
+    {label:'Start', dose:500,  freq:1, weeks:'Week 1',  desc:'500mcg/day'},
+    {label:'Standard',dose:1000, freq:1, weeks:'Week 2+', desc:'1mg/day'}
+  ],
+  ghkcu: [
+    {label:'Start', dose:500,  freq:1, weeks:'Weeks 1–2', desc:'500mcg/day'},
+    {label:'Standard',dose:1000,freq:1, weeks:'Week 3+',   desc:'1mg/day'}
+  ],
+  cagri: [
+    {label:'Start', dose:500,  freq:0.14, weeks:'Weeks 1–4',  desc:'0.5mg/wk'},
+    {label:'Step 2', dose:1000, freq:0.14, weeks:'Weeks 5–8',  desc:'1mg/wk'},
+    {label:'Target', dose:2000, freq:0.14, weeks:'Week 9+',    desc:'2mg/wk'}
+  ],
+  survodutide: [
+    {label:'Start', dose:600,  freq:0.14, weeks:'Weeks 1–4',  desc:'0.6mg/wk'},
+    {label:'Step 2', dose:2400, freq:0.14, weeks:'Weeks 5–8',  desc:'2.4mg/wk'},
+    {label:'Target', dose:4800, freq:0.14, weeks:'Week 9+',    desc:'4.8mg/wk'}
+  ],
+  mazdutide: [
+    {label:'Start', dose:1500, freq:0.14, weeks:'Weeks 1–4',  desc:'1.5mg/wk'},
+    {label:'Step 2', dose:3000, freq:0.14, weeks:'Weeks 5–8',  desc:'3mg/wk'},
+    {label:'Target', dose:6000, freq:0.14, weeks:'Week 9+',    desc:'6mg/wk'}
+  ]
+};
+function getTitration(id) {
+  const gk = groupKey(id);
+  return TITRATION[gk] || null;
+}
+
 // ═══ STATE ═══
 const state = {
   step: 0,
@@ -562,18 +644,60 @@ const state = {
   configs: {},
   activeMixId: null,
   trackerDates: {},
+  schedDays: {},
+  beginnerMode: true,
 };
+
+function smartBac(vialMg, doseMcg) {
+  if (!vialMg || !doseMcg) return 2;
+  const testUnits = doseMcg * 2 / (vialMg * 10);
+  if (testUnits >= 10 && testUnits <= 80) return 2;
+  if (testUnits > 80) {
+    let bac = Math.round(50 * vialMg * 10 / doseMcg * 2) / 2;
+    return Math.max(1, Math.min(2, bac));
+  }
+  let bac = Math.round(20 * vialMg * 10 / doseMcg * 2) / 2;
+  bac = Math.max(1, Math.min(10, bac));
+  const check = doseMcg * bac / (vialMg * 10);
+  if (check < 10 && bac < 10) bac = Math.min(10, Math.ceil(10 * vialMg * 10 / doseMcg * 2) / 2);
+  return bac;
+}
 
 function cfg(id) {
   if (!state.configs[id]) {
     const p = PEPTIDE_MAP[id];
-    const bac = 2;
-    const units = p.vial > 0 ? Math.round(p.dose * bac / (p.vial * 10) * 10) / 10 : 0;
-    const pFreqMode = p.freq < 0.5 ? 'week' : 'day';
-    const pFreqInput = pFreqMode === 'week' ? Math.round(p.freq * 7 * 10) / 10 : p.freq;
-    state.configs[id] = {vial:p.vial, bac, units, _doseMcg:p.dose, microdose:false, freqMode:pFreqMode, freqInput:pFreqInput};
+    const tit = getTitration(id);
+    const dose = tit ? tit[0].dose : p.dose;
+    const freq = tit ? tit[0].freq : p.freq;
+    const bac = smartBac(p.vial, dose);
+    const units = p.vial > 0 ? Math.round(dose * bac / (p.vial * 10) * 10) / 10 : 0;
+    const pFreqMode = freq < 0.5 ? 'week' : 'day';
+    const pFreqInput = pFreqMode === 'week' ? Math.round(freq * 7 * 10) / 10 : freq;
+    state.configs[id] = {vial:p.vial, bac, units, _doseMcg:dose, microdose:false, freqMode:pFreqMode, freqInput:pFreqInput, titStage: tit ? 0 : -1};
   }
   return state.configs[id];
+}
+
+function selectTitStage(id, stageIdx) {
+  const c = cfg(id);
+  const tit = getTitration(id);
+  if (!tit || !tit[stageIdx]) return;
+  const stage = tit[stageIdx];
+  const unitsNeeded = c.vial > 0 ? Math.round(stage.dose * c.bac / (c.vial * 10) * 10) / 10 : 0;
+  if (unitsNeeded > 100) return;
+  c.titStage = stageIdx;
+  c._doseMcg = stage.dose;
+  c.units = c.vial > 0 ? Math.round(stage.dose * c.bac / (c.vial * 10) * 10) / 10 : 0;
+  const pFreqMode = stage.freq < 0.5 ? 'week' : 'day';
+  const pFreqInput = pFreqMode === 'week' ? Math.round(stage.freq * 7 * 10) / 10 : stage.freq;
+  c.freqMode = pFreqMode;
+  c.freqInput = pFreqInput;
+  delete state.schedDays[id];
+  const muEl = document.getElementById('mu-'+id);
+  const freqEl = document.getElementById('fi-'+id);
+  if (muEl) muEl.value = c.units;
+  if (freqEl) freqEl.value = c.freqInput;
+  renderMixStep();
 }
 
 // ═══ STEPPER ═══
