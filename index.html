@@ -173,6 +173,14 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 .empty-state{text-align:center;padding:2.5rem 1rem;color:var(--text-muted);font-size:13px}
 .tip{display:flex;gap:8px;padding:.75rem 1rem;background:rgba(212,186,153,.07);border:1px solid rgba(212,186,153,.2);border-radius:var(--radius-sm);font-size:12px;color:var(--text-muted);margin-bottom:1rem}
 .tip svg{flex-shrink:0;margin-top:2px;color:var(--blue)}
+.search-wrap{position:relative;margin-bottom:1.25rem}
+.search-wrap input{width:100%;background:var(--bg-input);border:1px solid var(--color-border);border-radius:var(--radius-sm);color:var(--text-primary);font-family:var(--font-body);font-size:14px;padding:9px 12px 9px 36px;outline:none;transition:border-color .2s}
+.search-wrap input:focus{border-color:var(--blue)}
+.search-wrap input::placeholder{color:var(--text-muted)}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none}
+.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;padding:2px 6px;line-height:1}
+.search-clear:hover{color:var(--text-primary)}
+.search-clear.hidden{display:none}
 .conc-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(90,138,94,.1);border:1px solid rgba(90,138,94,.25);border-radius:99px;padding:4px 12px;font-size:12px;color:var(--green);font-weight:600}
 
 /* Share card modal */
@@ -222,6 +230,11 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
     <div class="card">
       <div class="card-title"><div class="icon icon-blue"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>Select Your Peptide(s)</div>
       <div class="tip"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><span>Select one or more peptides. You can always go back and add more.</span></div>
+      <div class="search-wrap">
+        <svg class="search-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="peptide-search" placeholder="Search peptides…" autocomplete="off">
+        <button class="search-clear hidden" id="search-clear" aria-label="Clear search">&times;</button>
+      </div>
       <div class="section-label">Recovery &amp; Healing</div>
       <div class="peptide-grid" id="grid-recovery"></div>
       <div class="section-label">Fat Loss &amp; Metabolic</div>
@@ -643,6 +656,41 @@ function updateSelCount() {
   const n = state.selections.size;
   document.getElementById('sel-count').textContent = n===0?'0 peptides selected':n===1?'1 peptide selected':`${n} peptides selected`;
 }
+
+// ═══ SEARCH ═══
+(function initSearch() {
+  const input = document.getElementById('peptide-search');
+  const clearBtn = document.getElementById('search-clear');
+  const cats = ['recovery','fat','hormone','cognitive','fertility','specialty'];
+  const labelMap = {};
+  cats.forEach(cat => {
+    const grid = document.getElementById('grid-' + cat);
+    if (grid) labelMap[cat] = grid.previousElementSibling; // the .section-label
+  });
+
+  function filterPeptides() {
+    const q = input.value.trim().toLowerCase();
+    clearBtn.classList.toggle('hidden', !q);
+    cats.forEach(cat => {
+      const grid = document.getElementById('grid-' + cat);
+      if (!grid) return;
+      const cards = grid.children;
+      let anyVisible = false;
+      for (const card of cards) {
+        const name = card.querySelector('.pep-name')?.textContent.toLowerCase() || '';
+        const match = !q || name.includes(q);
+        card.style.display = match ? '' : 'none';
+        if (match) anyVisible = true;
+      }
+      const label = labelMap[cat];
+      if (label) label.style.display = anyVisible ? '' : 'none';
+      grid.style.display = anyVisible ? '' : 'none';
+    });
+  }
+
+  input.addEventListener('input', filterPeptides);
+  clearBtn.addEventListener('click', () => { input.value = ''; filterPeptides(); input.focus(); });
+})();
 
 // ═══ STEP 1: MIX ═══
 function renderMixStep() {
