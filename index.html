@@ -168,6 +168,23 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 
 /* Misc */
 .section-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.75rem}
+
+/* Category accordion */
+.cat-accordion{margin-bottom:2px}
+.cat-header{display:flex;align-items:center;justify-content:space-between;padding:.85rem .25rem;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;border-bottom:1px solid var(--separator);transition:border-color .2s}
+.cat-header:active{opacity:.7}
+.cat-header-left{display:flex;align-items:center;gap:8px}
+.cat-header .section-label{margin-bottom:0;pointer-events:none;transition:color .2s}
+.cat-header .cat-count{font-size:10px;font-weight:600;color:var(--green);background:rgba(90,138,94,.12);padding:1px 7px;border-radius:99px;display:none}
+.cat-header .cat-count.visible{display:inline-block}
+.cat-header .cat-chevron{width:20px;height:20px;color:var(--text-muted);transition:transform .25s ease,color .2s;flex-shrink:0}
+.cat-accordion.open .cat-chevron{transform:rotate(180deg);color:var(--blue)}
+.cat-accordion.open .cat-header{border-color:var(--separator-md)}
+.cat-accordion.open .cat-header .section-label{color:var(--blue)}
+.cat-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.cat-accordion.open .cat-body{grid-template-rows:1fr}
+.cat-body-inner{overflow:hidden;min-height:0}
+.cat-body-inner .peptide-grid{padding-top:.75rem;padding-bottom:.5rem}
 .divider{height:1px;background:var(--color-border);margin:1.5rem 0}
 .hidden{display:none!important}
 .empty-state{text-align:center;padding:2.5rem 1rem;color:var(--text-muted);font-size:13px}
@@ -222,18 +239,48 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
     <div class="card">
       <div class="card-title"><div class="icon icon-blue"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>Select Your Peptide(s)</div>
       <div class="tip"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><span>Select one or more peptides. You can always go back and add more.</span></div>
-      <div class="section-label">Recovery &amp; Healing</div>
-      <div class="peptide-grid" id="grid-recovery"></div>
-      <div class="section-label">Fat Loss &amp; Metabolic</div>
-      <div class="peptide-grid" id="grid-fat"></div>
-      <div class="section-label">Hormone &amp; Growth</div>
-      <div class="peptide-grid" id="grid-hormone"></div>
-      <div class="section-label">Cognitive &amp; Other</div>
-      <div class="peptide-grid" id="grid-cognitive"></div>
-      <div class="section-label">Sexual Health &amp; Fertility</div>
-      <div class="peptide-grid" id="grid-fertility"></div>
-      <div class="section-label">Specialty &amp; Anti-Aging</div>
-      <div class="peptide-grid" id="grid-specialty"></div>
+      <div class="cat-accordion open" data-cat="recovery">
+        <div class="cat-header" onclick="toggleCat('recovery')">
+          <div class="cat-header-left"><span class="section-label">Recovery &amp; Healing</span><span class="cat-count" id="cc-recovery"></span></div>
+          <svg class="cat-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="cat-body"><div class="cat-body-inner"><div class="peptide-grid" id="grid-recovery"></div></div></div>
+      </div>
+      <div class="cat-accordion" data-cat="fat">
+        <div class="cat-header" onclick="toggleCat('fat')">
+          <div class="cat-header-left"><span class="section-label">Fat Loss &amp; Metabolic</span><span class="cat-count" id="cc-fat"></span></div>
+          <svg class="cat-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="cat-body"><div class="cat-body-inner"><div class="peptide-grid" id="grid-fat"></div></div></div>
+      </div>
+      <div class="cat-accordion" data-cat="hormone">
+        <div class="cat-header" onclick="toggleCat('hormone')">
+          <div class="cat-header-left"><span class="section-label">Hormone &amp; Growth</span><span class="cat-count" id="cc-hormone"></span></div>
+          <svg class="cat-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="cat-body"><div class="cat-body-inner"><div class="peptide-grid" id="grid-hormone"></div></div></div>
+      </div>
+      <div class="cat-accordion" data-cat="cognitive">
+        <div class="cat-header" onclick="toggleCat('cognitive')">
+          <div class="cat-header-left"><span class="section-label">Cognitive &amp; Other</span><span class="cat-count" id="cc-cognitive"></span></div>
+          <svg class="cat-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="cat-body"><div class="cat-body-inner"><div class="peptide-grid" id="grid-cognitive"></div></div></div>
+      </div>
+      <div class="cat-accordion" data-cat="fertility">
+        <div class="cat-header" onclick="toggleCat('fertility')">
+          <div class="cat-header-left"><span class="section-label">Sexual Health &amp; Fertility</span><span class="cat-count" id="cc-fertility"></span></div>
+          <svg class="cat-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="cat-body"><div class="cat-body-inner"><div class="peptide-grid" id="grid-fertility"></div></div></div>
+      </div>
+      <div class="cat-accordion" data-cat="specialty">
+        <div class="cat-header" onclick="toggleCat('specialty')">
+          <div class="cat-header-left"><span class="section-label">Specialty &amp; Anti-Aging</span><span class="cat-count" id="cc-specialty"></span></div>
+          <svg class="cat-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="cat-body"><div class="cat-body-inner"><div class="peptide-grid" id="grid-specialty"></div></div></div>
+      </div>
     </div>
     <div class="nav-row">
       <span style="font-size:13px;color:var(--text-muted)" id="sel-count">0 peptides selected</span>
@@ -763,9 +810,27 @@ function updateGroupCards() {
   });
 }
 
+function toggleCat(cat) {
+  const el = document.querySelector(`.cat-accordion[data-cat="${cat}"]`);
+  if (!el) return;
+  const isOpen = el.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.cat-accordion.open').forEach(a => a.classList.remove('open'));
+  // Toggle clicked (open if it wasn't already open)
+  if (!isOpen) el.classList.add('open');
+}
+
 function updateSelCount() {
   const n = state.selections.size;
   document.getElementById('sel-count').textContent = n===0?'0 peptides selected':n===1?'1 peptide selected':`${n} peptides selected`;
+  // Update per-category selection counts
+  ['recovery','fat','hormone','cognitive','fertility','specialty'].forEach(cat => {
+    const count = [...state.selections].filter(id => PEPTIDE_MAP[id]?.cat === cat).length;
+    const badge = document.getElementById('cc-' + cat);
+    if (!badge) return;
+    badge.textContent = count === 1 ? '1 selected' : count + ' selected';
+    badge.classList.toggle('visible', count > 0);
+  });
 }
 
 // ═══ STEP 1: MIX ═══
